@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 #NoReturn means the function does not return any value
 def pytest_addoption(parser: Parser) -> NoReturn:
+    # add a command line option to pytest
     group = parser.getgroup("pytest-dataguard")
     group.addoption(
         "--file",
@@ -28,6 +29,7 @@ def pytest_addoption(parser: Parser) -> NoReturn:
 
 
 def pytest_configure(config: Config) -> NoReturn:
+    # register the plugin if the --file option is provided
     if not config.getoption("--file"):
         return
 

@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from _pytest.terminal import TerminalReporter
 
 class DataGuardPlugin:
+    # Initialize the plugin with configuration options
     def __init__(self, config: Config):
         self.config = config
         self.file: Path = config.getoption("--file")
@@ -18,6 +19,7 @@ class DataGuardPlugin:
         self._fail = False
 
     def read_file(self) -> pl.DataFrame:
+        """Read the CSV file into a Polars DataFrame."""
         file_path = Path(self.file)
         if not file_path.exists():
             self._fail = True
@@ -26,6 +28,7 @@ class DataGuardPlugin:
 
 
     def get_columns_not_null(self, df: pl.DataFrame) -> list[str]:
+        """Return a list of columns that contain null values."""
         melted = (
                 df.null_count()
                 .melt(variable_name="column", value_name="null_count")
@@ -37,6 +40,7 @@ class DataGuardPlugin:
         )
 
     def get_columns_unique(self, df: pl.DataFrame) -> list[str]:
+        """Return a list of columns that contain duplicate values."""
         bad = []
 
         # single-column uniqueness
@@ -51,6 +55,7 @@ class DataGuardPlugin:
         return bad
 
     def pytest_terminal_summary(self, terminalreporter: TerminalReporter) -> None:
+        """Hook to add a summary to the terminal report."""
         self.reporter = terminalreporter
         if not self.file:
             self._fail = True
@@ -87,6 +92,7 @@ class DataGuardPlugin:
                 terminalreporter.write_line(f"Error during unique check: {e}")
 
     def pytest_sessionfinish(self, session: Session, exitstatus: ExitCode) -> None:
+        """Hook to set the exit status based on validation results."""
         if self.reporter:
             self.reporter.write_line("Data validation completed.")
         if self._fail:
