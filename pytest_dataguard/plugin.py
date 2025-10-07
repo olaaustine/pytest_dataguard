@@ -3,17 +3,19 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from pathlib import Path
 import polars as pl
+
 if TYPE_CHECKING:
     from _pytest.config import Config, ExitCode
     from _pytest.main import Session
     from _pytest.terminal import TerminalReporter
+
 
 class DataGuardPlugin:
     # Initialize the plugin with configuration options
     def __init__(self, config: Config):
         self.config = config
         self.file: Path = config.getoption("--file")
-        self.not_null : bool = config.getoption("--not_null") or  True
+        self.not_null: bool = config.getoption("--not_null") or True
         self.unique: list[str] = config.getoption("--unique")
         self.reporter: TerminalReporter | None = None
         self._fail = False
@@ -26,17 +28,12 @@ class DataGuardPlugin:
             raise FileNotFoundError(f"The file {self.file} does not exist.")
         return pl.read_csv(self.file, separator=",")
 
-
     def get_columns_not_null(self, df: pl.DataFrame) -> list[str]:
         """Return a list of columns that contain null values."""
         melted = df.select(pl.all().is_null().sum()).melt(
             variable_name="column", value_name="null_count"
         )
-        return (
-            melted.filter(pl.col("null_count") > 0)
-            .get_column("column")
-            .to_list()
-        )
+        return melted.filter(pl.col("null_count") > 0).get_column("column").to_list()
 
     def get_columns_unique(self, df: pl.DataFrame) -> list[str]:
         """Return a list of columns that contain duplicate values."""
@@ -59,7 +56,9 @@ class DataGuardPlugin:
         if not self.file:
             self._fail = True
             terminalreporter.section("pytest-dataguard")
-            terminalreporter.write_line("No --file provided; skipping dataguard checks.")
+            terminalreporter.write_line(
+                "No --file provided; skipping dataguard checks."
+            )
             return
         try:
             df = self.read_file()
@@ -72,9 +71,13 @@ class DataGuardPlugin:
                 columns_with_null = self.get_columns_not_null(df)
                 if columns_with_null:
                     self._fail = True
-                    terminalreporter.write_line(f"Columns with null values: {', '.join(columns_with_null)}")
+                    terminalreporter.write_line(
+                        f"Columns with null values: {', '.join(columns_with_null)}"
+                    )
                 else:
-                    terminalreporter.write_line("All columns passed the not-null check.")
+                    terminalreporter.write_line(
+                        "All columns passed the not-null check."
+                    )
             except Exception as e:
                 self._fail = True
                 terminalreporter.write_line(f"Error during not-null check: {e}")
@@ -83,9 +86,13 @@ class DataGuardPlugin:
                 non_unique_columns = self.get_columns_unique(df)
                 if non_unique_columns:
                     self._fail = True
-                    terminalreporter.write_line(f"Columns with duplicate values: {', '.join(non_unique_columns)}")
+                    terminalreporter.write_line(
+                        f"Columns with duplicate values: {', '.join(non_unique_columns)}"
+                    )
                 else:
-                    terminalreporter.write_line("All specified columns passed the unique check.")
+                    terminalreporter.write_line(
+                        "All specified columns passed the unique check."
+                    )
             except Exception as e:
                 self._fail = True
                 terminalreporter.write_line(f"Error during unique check: {e}")

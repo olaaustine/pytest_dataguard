@@ -65,4 +65,3 @@ Contributions are welcome! Please open issues or submit pull requests.
 
 ## License
 [MIT License](LICENSE)
-
