@@ -24,16 +24,15 @@ class DataGuardPlugin:
         if not file_path.exists():
             self._fail = True
             raise FileNotFoundError(f"The file {self.file} does not exist.")
-        return pl.read_csv(self.file, sep=",")
+        return pl.read_csv(self.file, separator=",")
 
 
     def get_columns_not_null(self, df: pl.DataFrame) -> list[str]:
         """Return a list of columns that contain null values."""
-        melted = (
-                df.null_count()
-                .melt(variable_name="column", value_name="null_count")
+        melted = df.select(pl.all().is_null().sum()).melt(
+            variable_name="column", value_name="null_count"
         )
-        return(
+        return (
             melted.filter(pl.col("null_count") > 0)
             .get_column("column")
             .to_list()
@@ -48,8 +47,8 @@ class DataGuardPlugin:
             if col not in df.columns:
                 self._fail = True
                 raise ValueError(f"Column '{col}' does not exist.")
-            dups = df.select(pl.col(col)).is_duplicated().sum()  # counts duplicates
-            if dups > 0:
+            num_dups = df.get_column(col).is_duplicated().sum()  # counts duplicates
+            if num_dups > 0:
                 bad.append(col)
 
         return bad
