@@ -27,10 +27,10 @@ Homepage = "https://github.com/olaaustine/pytest_dataguard"
 Issues = "https://github.com/olaaustine/pytest_dataguard/issues"
 
 [tool.setuptools]
-package-dir = {"" = "pytest_dataguard"}
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
-where = ["pytest_dataguard"]
+where = ["src"]
 
 [project.entry-points.pytest11]
 dataguard = "pytest_dataguard.options"
