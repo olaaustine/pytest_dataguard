@@ -20,9 +20,9 @@ def pytest_addoption(parser: Parser) -> NoReturn:
     )
     group.addoption(
         "--not_null",
-        default=True,
         action="store_true",
-        help="Checks that there is a no null value in the file",
+        default=False,
+        help="Allow null values in the file (by default, nulls are not allowed)",
     )
     group.addoption(
         "--unique",

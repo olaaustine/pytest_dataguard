@@ -27,6 +27,7 @@ def test_read_file_success(tmp_path):
     plugin = DataGuardPlugin(config)
     df = plugin.read_file()
     assert df.shape == (2, 2)
+    # only two columns a and b
     assert set(df.columns) == {"a", "b"}
 
 
@@ -40,6 +41,14 @@ def test_read_file_not_found(tmp_path):
 def test_get_columns_not_null():
     df = pl.DataFrame({"a": [1, None, 3], "b": [4, 5, 6], "c": [None, None, None]})
     config = DummyConfig(file="dummy.csv", not_null=True, unique=[])
+    plugin = DataGuardPlugin(config)
+    result = plugin.get_columns_not_null(df)
+    assert set(result) == {"a", "c"}
+
+
+def test_get_columns_not_null_is_always_set():
+    df = pl.DataFrame({"a": [1, None, 3], "b": [4, 5, 6], "c": [None, None, None]})
+    config = DummyConfig(file="dummy.csv")
     plugin = DataGuardPlugin(config)
     result = plugin.get_columns_not_null(df)
     assert set(result) == {"a", "c"}
