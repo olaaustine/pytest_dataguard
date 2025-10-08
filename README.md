@@ -15,10 +15,10 @@ Install via pip:
 pip install pytest-dataguard
 ```
 
-Or install from source:
+Or install from uv:
 
 ```bash
-pip install .
+uv add pytest-dataguard .
 ```
 
 ## Usage
