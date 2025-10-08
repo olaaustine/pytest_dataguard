@@ -1,4 +1,0 @@
-id,sender_id,receiver_id,amount
-1,S1,R1,100
-1,S2,R2,9000
-3,S3,,50
