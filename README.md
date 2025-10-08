@@ -51,7 +51,7 @@ pytest --file data.csv --unique id --unique email
 
 When you run pytest with the `pytest-dataguard` options, the plugin will:
 - Load the specified CSV file using [Polars](https://pola.rs/)
-- Check for null values if `--not_null` is set
+- Check for null values `--not_null` is set by default
 - Check that specified columns have unique values if `--unique` is used
 - Fail the test session if any validation fails
 
