@@ -39,3 +39,10 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
